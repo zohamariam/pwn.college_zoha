@@ -348,6 +348,117 @@ Learnt how to check for hidden files in the directory using the ls -a command
 ### References 
 NA
 
+## An Epic Filesystem Quest
+With your knowledge of cd, ls, and cat, we're ready to play a little game!
+
+We'll start it out in /. Normally:
+```
+hacker@dojo:~$ cd /
+hacker@dojo:/$ ls
+bin   challenge  etc   home  lib32  libx32  mnt  proc  run   srv  tmp  var
+boot  dev        flag  lib   lib64  media   opt  root  sbin  sys  usr
+```
+That's a lot of contents! One day, you will be quite familiar with them, but already, you might recognize the flag file and the challenge directory.
+
+In this challenge, I have hidden the flag! Here, you will use ls and cat to follow my breadcrumbs and find it! Here's how it'll work:
+
+0. Your first clue is in /. Head on over there.
+1. Look around with ls. There'll be a file named HINT or CLUE or something along those lines!
+2. cat that file to read the clue!
+3. Depending on what the clue says, head on over to the next directory (or don't!).
+4. Follow the clues to the flag!
+Good luck!
+
+### Solve
+**Flag:** `pwn.college{cm2DXVg2ypSj5AsDESf7bZSOtBq.QX5IDO0wCO4kjNzEzW}`
+
+The overall process was tedious and maybe a few negative tangents along the way which is displayed in the code below but it was pretty self-explanatory. 
+
+```
+hacker@commands~an-epic-filesystem-quest:~$ cd /
+hacker@commands~an-epic-filesystem-quest:/$ ls
+SPOILER  boot       dev  flag  lib    lib64   media  nix  proc  run   srv  tmp  var
+bin      challenge  etc  home  lib32  libx32  mnt    opt  root  sbin  sys  usr
+hacker@commands~an-epic-filesystem-quest:/$ cat SPOILER
+Lucky listing!
+The next clue is in: /usr/local/lib/python3.8/dist-packages/pwnlib/encoders/i386
+
+The next clue is **hidden** --- its filename starts with a '.' character. You'll need to look for it using special options to 'ls'.
+hacker@commands~an-epic-filesystem-quest:/$ cd /usr/local/lib/python3.8/dist-packages/pwnlib/encoders/i386
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/pwnlib/encoders/i386$ ls -a
+.  ..  .POINTER  __init__.py  __pycache__  ascii_shellcode.py  delta.py  xor.py
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/pwnlib/encoders/i386$ cat .POINTER
+Lucky listing!
+The next clue is in: /usr/local/lib/python3.8/dist-packages/angr/analyses/decompiler/structuring
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/pwnlib/encoders/i386$ cd .
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/pwnlib/encoders/i386$ cd ..
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/pwnlib/encoders$ cd ..
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/pwnlib$ cd ..
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages$ cd .angr/analyses/decompiler/structuring
+bash: cd: .angr/analyses/decompiler/structuring: No such file or directory
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages$ cd angr/analyses/decompiler/structuring
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/angr/analyses/decompiler/structuring$ ls
+ALERT  __init__.py  __pycache__  dream.py  phoenix.py  recursive_structurer.py  structurer_base.py  structurer_nodes.py
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/angr/analyses/decompiler/structuring$ cat ALERT
+Great sleuthing!
+The next clue is in: /usr/lib/x86_64-linux-gnu/perl/cross-config-5.30.0
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/angr/analyses/decompiler/structuring$ cd
+hacker@commands~an-epic-filesystem-quest:~$ cd /usr/lib/x86_64-linux-gnu/perl/cross-config-5.30.0
+hacker@commands~an-epic-filesystem-quest:/usr/lib/x86_64-linux-gnu/perl/cross-config-5.30.0$ ls
+Config.pm  Config_heavy.pl  README
+hacker@commands~an-epic-filesystem-quest:/usr/lib/x86_64-linux-gnu/perl/cross-config-5.30.0$ cat README
+Great sleuthing!
+The next clue is in: /usr/share/javascript/mathjax/jax/output/SVG/fonts/STIX-Web/Main/BoldItalic
+
+The next clue is **hidden** --- its filename starts with a '.' character. You'll need to look for it using special options to 'ls'.
+hacker@commands~an-epic-filesystem-quest:/usr/lib/x86_64-linux-gnu/perl/cross-config-5.30.0$ cd /usr/share/javascript/mathjax/jax/output/SVG/fonts/STIX-Web/Main/BoldItalic
+hacker@commands~an-epic-filesystem-quest:/usr/share/javascript/mathjax/jax/output/SVG/fonts/STIX-Web/Main/BoldItalic$ ls -a
+.  ..  .NUGGET  Main.js
+hacker@commands~an-epic-filesystem-quest:/usr/share/javascript/mathjax/jax/output/SVG/fonts/STIX-Web/Main/BoldItalic$ cat .NUGGET
+Congratulations, you found the clue!
+The next clue is in: /usr/lib/R/library/base/help
+
+The next clue is **delayed** --- it will not become readable until you enter the directory with 'cd'.
+hacker@commands~an-epic-filesystem-quest:/usr/share/javascript/mathjax/jax/output/SVG/fonts/STIX-Web/Main/BoldItalic$ cd /usr/lib/R/library/base/help
+hacker@commands~an-epic-filesystem-quest:/usr/lib/R/library/base/help$ ls
+AnIndex  DOSSIER  aliases.rds  base.rdb  base.rdx  paths.rds
+hacker@commands~an-epic-filesystem-quest:/usr/lib/R/library/base/help$ cd DOSSIER
+bash: cd: DOSSIER: Not a directory
+hacker@commands~an-epic-filesystem-quest:/usr/lib/R/library/base/help$ cd AnIndex
+bash: cd: AnIndex: Not a directory
+hacker@commands~an-epic-filesystem-quest:/usr/lib/R/library/base/help$ cat DOSSIER
+Lucky listing!
+The next clue is in: /usr/local/lib/python3.8/dist-packages/jedi/third_party/typeshed
+hacker@commands~an-epic-filesystem-quest:/usr/lib/R/library/base/help$ cd /usr/local/lib/python3.8/dist-packages/jedi/third_party/typeshed
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/jedi/third_party/typeshed$ la
+bash: la: command not found
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/jedi/third_party/typeshed$ ls
+HINT  LICENSE  stdlib  third_party
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/jedi/third_party/typeshed$ cat HINT
+Yahaha, you found me!
+The next clue is in: /usr/lib/jvm/java-17-openjdk-amd64/legal/jdk.security.auth
+
+Watch out! The next clue is **trapped**. You'll need to read it out without 'cd'ing into the directory; otherwise, the clue will self destruct!
+hacker@commands~an-epic-filesystem-quest:/usr/local/lib/python3.8/dist-packages/jedi/third_party/typeshed$ cd
+hacker@commands~an-epic-filesystem-quest:~$ ls /usr/lib/jvm/java-17-openjdk-amd64/legal/jdk.security.auth
+ASSEMBLY_EXCEPTION  WHISPER-TRAPPED
+hacker@commands~an-epic-filesystem-quest:~$ cat /usr/lib/jvm/java-17-openjdk-amd64/legal/jdk.security.auth/WHISPER-TRAPPED
+Yahaha, you found me!
+The next clue is in: /usr/lib/x86_64-linux-gnu/lua/5.2
+
+Watch out! The next clue is **trapped**. You'll need to read it out without 'cd'ing into the directory; otherwise, the clue will self destruct!
+hacker@commands~an-epic-filesystem-quest:~$ ls /usr/lib/x86_64-linux-gnu/lua/5.2
+GIST-TRAPPED  lpeg.so  luv.so
+hacker@commands~an-epic-filesystem-quest:~$ cat /usr/lib/x86_64-linux-gnu/lua/5.2/GIST-TRAPPED
+CONGRATULATIONS! Your perserverence has paid off, and you have found the flag!
+It is: pwn.college{cm2DXVg2ypSj5AsDESf7bZSOtBq.QX5IDO0wCO4kjNzEzW}
+```
+
+### New Learnings
+learnt the extensive use of the ls, ls -a, cd and the cat commands in solving the quest.
+
+### References 
+NA
 
 
 
