@@ -317,5 +317,37 @@ learnt how to move files using mv command.
 ### References 
 NA
 
+## hidden files
+Interestingly, ls doesn't list all the files by default. Linux has a convention where files that start with a . don't show up by default in ls and in a few other contexts. To view them with ls, you need to invoke ls with the -a flag, as so:
+```
+hacker@dojo:~$ touch pwn
+hacker@dojo:~$ touch .college
+hacker@dojo:~$ ls
+pwn
+hacker@dojo:~$ ls -a
+.college	pwn
+hacker@dojo:~$
+```
+Now, it's your turn! Go find the flag, hidden as a dot-prepended file in /.
+
+### Solve
+**Flag:** `pwn.college{0Bi92eHQjqAEbT4pdDF1M96yFf3.QXwUDO0wCO4kjNzEzW}`
+
+```
+hacker@commands~hidden-files:~$ cd /
+hacker@commands~hidden-files:/$ ls -a
+.   .dockerenv           bin   challenge  etc   lib    lib64   media  nix  proc  run   srv  tmp  var
+..  .flag-7486242329709  boot  dev        home  lib32  libx32  mnt    opt  root  sbin  sys  usr
+hacker@commands~hidden-files:/$ cat .flag-7486242329709
+pwn.college{0Bi92eHQjqAEbT4pdDF1M96yFf3.QXwUDO0wCO4kjNzEzW}
+```
+
+### New Learnings
+Learnt how to check for hidden files in the directory using the ls -a command
+
+### References 
+NA
+
+
 
 
