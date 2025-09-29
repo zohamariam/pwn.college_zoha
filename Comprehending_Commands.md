@@ -460,5 +460,146 @@ learnt the extensive use of the ls, ls -a, cd and the cat commands in solving th
 ### References 
 NA
 
+## making directories
+We can create files. How about directories? You make directories using the mkdir command. Then you can stick files in there!
+
+Watch:
+```
+hacker@dojo:~$ cd /tmp
+hacker@dojo:/tmp$ ls
+hacker@dojo:/tmp$ ls
+hacker@dojo:/tmp$ mkdir my_directory
+hacker@dojo:/tmp$ ls
+my_directory
+hacker@dojo:/tmp$ cd my_directory
+hacker@dojo:/tmp/my_directory$ touch my_file
+hacker@dojo:/tmp/my_directory$ ls
+my_file
+hacker@dojo:/tmp/my_directory$ ls /tmp/my_directory/my_file
+/tmp/my_directory/my_file
+hacker@dojo:/tmp/my_directory$
+```
+
+Now, go forth and create a /tmp/pwn directory and make a college file in it! Then run /challenge/run, which will check your solution and give you the flag!
+
+### Solve
+**Flag:** `pwn.college{I0LeTUa9jp8tm-HbQWEw_FwYVrk.QXxMDO0wCO4kjNzEzW}`
+
+```
+hacker@commands~making-directories:~$ cd /tmp
+hacker@commands~making-directories:/tmp$ mkdir pwn
+hacker@commands~making-directories:/tmp$ cd pwn
+hacker@commands~making-directories:/tmp/pwn$ touch college
+hacker@commands~making-directories:/tmp/pwn$ ls
+college
+hacker@commands~making-directories:/tmp/pwn$ /challenge/run
+Success! Here is your flag:
+pwn.college{I0LeTUa9jp8tm-HbQWEw_FwYVrk.QXxMDO0wCO4kjNzEzW}
+```
+
+### New Learnings
+learnt how to make a directory and create a file in it.
+
+### References 
+NA
+
+## finding files
+So now we know how to list, read, and create files. But how do we find them? We use the find command!
+
+The find command takes optional arguments describing the search criteria and the search location. If you don't specify a search criteria, find matches every file. If you don't specify a search location, find uses the current working directory (.). For example:
+```
+hacker@dojo:~$ mkdir my_directory
+hacker@dojo:~$ mkdir my_directory/my_subdirectory
+hacker@dojo:~$ touch my_directory/my_file
+hacker@dojo:~$ touch my_directory/my_subdirectory/my_subfile
+hacker@dojo:~$ find
+.
+./my_directory
+./my_directory/my_subdirectory
+./my_directory/my_subdirectory/my_subfile
+./my_directory/my_file
+hacker@dojo:~$
+```
+And when specifying the search location:
+```
+hacker@dojo:~$ find my_directory/my_subdirectory
+my_directory/my_subdirectory
+my_directory/my_subdirectory/my_subfile
+hacker@dojo:~$
+```
+And, of course, we can specify the criteria! For example, here, we filter by name:
+```
+hacker@dojo:~$ find -name my_subfile
+./my_directory/my_subdirectory/my_subfile
+hacker@dojo:~$ find -name my_subdirectory
+./my_directory/my_subdirectory
+hacker@dojo:~$
+```
+You can search the whole filesystem if you want!
+```
+hacker@dojo:~$ find / -name hacker
+/home/hacker
+hacker@dojo:~$
+```
+Now it's your turn. I've hidden the flag in a random directory on the filesystem. It's still called flag. Go find it!
+
+Several notes. First, there are other files named flag on the filesystem. Don't panic if the first one you try doesn't have the actual flag in it. Second, there're plenty of places in the filesystem that are not accessible to a normal user. These will cause find to generate errors, but you can ignore those; we won't hide the flag there! Finally, find can take a while; be patient!
+
+### Solve
+**Flag:** `pwn.college{0vp7O6YLTTyQ_5lgKRlblCgwn21.QXyMDO0wCO4kjNzEzW}`
+
+i first tried listing all the files in the current directory and didnt find anything. then went on to changing directories from /challenge to /tmp to /usr because those directories i have navigated to before. then went on to searching in the usr directory and found the flag.
+
+```
+hacker@commands~finding-files:~$ find -name flag
+hacker@commands~finding-files:~$ ls -la
+total 12
+drwxr-xr-x 1 hacker hacker   42 Sep 28 11:44 .
+drwxr-xr-x 1 root   root   4096 Sep 26 17:24 ..
+-rw------- 1 hacker hacker 3045 Sep 29 10:24 .bash_history
+drwxr-xr-x 1 hacker hacker    0 Sep 23 16:31 .config
+-rw-r--r-- 1 root   hacker   60 Sep 24 10:57 a
+hacker@commands~finding-files:~$ ls -a
+.  ..  .bash_history  .config  a
+hacker@commands~finding-files:~$ ls /.bash_history
+ls: cannot access '/.bash_history': No such file or directory
+hacker@commands~finding-files:~$ cd /challenge
+hacker@commands~finding-files:/challenge$ ls
+DESCRIPTION.md  run
+hacker@commands~finding-files:/challenge$ cd /tmp
+hacker@commands~finding-files:/tmp$ ls
+bin  hsperfdata_root  tmp.4mK6TfTSUV
+hacker@commands~finding-files:/tmp$ cd bin
+hacker@commands~finding-files:/tmp/bin$ find flag
+find: ‘flag’: No such file or directory
+hacker@commands~finding-files:/tmp/bin$ cd ..
+hacker@commands~finding-files:/tmp$ find -name flag
+find: ‘./tmp.4mK6TfTSUV’: Permission denied
+hacker@commands~finding-files:/tmp$ cd /usr
+hacker@commands~finding-files:/usr$ find -name flag
+./local/lib/python3.8/dist-packages/pwnlib/flag
+./share/singular/LIB/flag
+hacker@commands~finding-files:/usr$ cat ./local/lib/python3.8/dist-packages/pwnlib/flag
+cat: ./local/lib/python3.8/dist-packages/pwnlib/flag: Is a directory
+hacker@commands~finding-files:/usr$ cd ./local/lib/python3.8/dist-packages/pwnlib/flag
+hacker@commands~finding-files:/usr/local/lib/python3.8/dist-packages/pwnlib/flag$ find -name flag
+hacker@commands~finding-files:/usr/local/lib/python3.8/dist-packages/pwnlib/flag$ cat flag
+cat: flag: No such file or directory
+hacker@commands~finding-files:/usr/local/lib/python3.8/dist-packages/pwnlib/flag$ cd /usr/share/singular/LIB/flag
+bash: cd: /usr/share/singular/LIB/flag: Not a directory
+hacker@commands~finding-files:/usr/local/lib/python3.8/dist-packages/pwnlib/flag$ cd /usr
+hacker@commands~finding-files:/usr$ cat ./share/singular/LIB/flag
+pwn.college{0vp7O6YLTTyQ_5lgKRlblCgwn21.QXyMDO0wCO4kjNzEzW}
+```
+
+### New Learnings
+had an experience on finding files hidden in a random directory by using the find command
+
+### References 
+NA
+
+
+
+
 
 
